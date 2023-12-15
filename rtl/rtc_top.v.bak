@@ -1,0 +1,90 @@
+module rtc_top(
+	input	wire				sys_clk		,
+	input	wire				sys_rstn	,
+	input	wire				key_in		,
+
+	output	wire	[5:0]		sel			,
+	output	wire	[7:0]		seg			,
+	output	wire				iic_scl		,
+	inout	wire				iic_sda
+);
+			wire				key_flag	;
+			wire				iic_clk		;
+			wire				iic_end		;
+			wire	[7:0]		rd_data		;
+			wire				wr_en		;
+			wire				rd_en		;
+			wire				iic_start	;
+			wire	[15:0]		byte_addr	;
+			wire	[7:0]		wr_data		;
+			wire	[23:0]		data_out	;
+
+
+
+
+ key_filter
+#(
+	.CNT_MAX (20'd999_999) 
+)
+u0_key_filter(
+	.sys_clk 			(sys_clk)		, 
+	.sys_rstn 			(sys_rstn)		, 
+	.key_in   			(key_in)  		, 
+
+	.key_flag 			(key_flag)
+);
+
+
+ pdcf8563_ctrl
+#(
+	.TIME_INIT	(48'h23_12_11_21_16_00)			//YEAR_MON_DAY_HOUR_MIN_SCE
+)
+u0_pdcf8563_ctrl(
+  	.sys_clk			(sys_clk)					,					
+  	.iic_clk			(iic_clk)					,
+  	.sys_rstn			(sys_rstn)					,
+  	.iic_end			(iic_end)					,
+  	.rd_data			(rd_data)					,
+  	.key_flag			(key_flag)					,
+
+  	.wr_en				(wr_en)						,
+  	.rd_en				(rd_en)						,
+  	.iic_start			(iic_start)					,
+  	.byte_addr			(byte_addr)					,
+  	.wr_data			(wr_data)					,
+  	.data_out			(data_out)
+);
+
+ iic_control#(
+	.DEVICE_ADDR			(7'b101_0001)		,//slave device address
+	.SYS_CLK_FREQ			(26'd50_000_000)	,//frequency of systerm
+	.SCL_FREQ				(18'd250_000)
+)
+u0_iic_control(
+	.sys_clk			(sys_clk)							,
+	.sys_rstn			(sys_rstn)							,								
+	.wr_en				(wr_en)							,	
+	.rd_en				(rd_en)							,
+	.iic_start			(iic_start)							,
+	.addr_num			(addr_num)							,
+	.byte_addr			(byte_addr)							,
+	.wr_data			(wr_data)							,
+	
+	.iic_clk			(iic_clk)							,	
+	.iic_end			(iic_end)							,
+	.rd_data			(rd_data)							,
+	.iic_scl			(iic_scl)							,
+	.iic_sda			(iic_sda)
+
+);
+
+seg_driver	u0_seg_driver(
+	.clk				(sys_clk)									,
+	.rstn				(sys_rstn)									,
+	.data_in			(data_out)									,
+
+	.seg				(seg)										,
+	.sel				(sel)	
+);
+
+endmodule

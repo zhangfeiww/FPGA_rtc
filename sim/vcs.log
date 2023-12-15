@@ -1,0 +1,96 @@
+
+Warning-[DBG_FLAG_DEP] Debug Option is being Deprecated
+  The '-fsdb' debug-related option is being deprecated and will no longer be 
+  supported in a future release.
+  Please recompile using the '-debug_access<+options>' switch and incremental 
+  options as required.  Recommended options are '-debug_access' for 
+  post-process debug, '-debug_access+classdbg' for testbench debug, and 
+  '-debug_access+all' for all debug capabilities.  Refer the VCS user guide 
+  for more granular options for debug control under the switch '-debug_access'
+  and refer to '-debug_region' for region control.
+
+Command: vcs -full64 +v2k -R -timescale=1ns/10ps -f filelist.f -fsdb -cpp g++-4.8 \
+-cc gcc-4.8 -LDFLAGS -Wl,--no-as-needed -l vcs.log -cm line+tgl+cond+fsm -cm_dir \
+./vcs_coverage -cm_name case1
+*** Using c compiler gcc-4.8 instead of cc ...
+                         Chronologic VCS (TM)
+         Version L-2016.06_Full64 -- Sat Dec  9 15:10:13 2023
+               Copyright (c) 1991-2016 by Synopsys Inc.
+                         ALL RIGHTS RESERVED
+
+This program is proprietary and confidential information of Synopsys Inc.
+and may be used and disclosed only as authorized in a license agreement
+controlling such use and disclosure.
+
+Parsing design file '../src/iic_control.v'
+
+Warning-[IPDW] Identifier previously declared
+../src/iic_control.v, 37
+  Second declaration for identifier 'sda_en' ignored
+
+Parsing design file 'iic_control_tb.v'
+Top Level Modules:
+       iic_control_tb
+
+Warning-[AOUP] Attempt to override undefined parameter
+iic_control_tb.v, 28
+  Attempting to override undefined parameter "DEVSYS_CLK_FREQ", will ignore 
+  it.
+
+
+Warning-[AOUP] Attempt to override undefined parameter
+iic_control_tb.v, 28
+  Attempting to override undefined parameter "DEVSCL_FREQ", will ignore it.
+
+TimeScale is 1 ns / 1 ps
+VCS Coverage Metrics Release L-2016.06_Full64 Copyright (c) 1991-2016 by Synopsys Inc.
+***** Warning: +memcbk/-debug_access will not enable toggle coverage on MDAs.  Please use -cm_tgl mda to enable it.
+Starting vcs inline pass...
+1 unique modules to generate
+1 module and 0 UDP read. 
+recompiling module iic_control_tb
+All of 1 modules done
+make[1]: Entering directory '/home/fzhang/Verilog/rtc/sim/csrc'
+rm -f _csrc*.so pre_vcsobj_*.so share_vcsobj_*.so
+ld -shared  -o .//../simv.daidir//_csrc0.so objs/amcQw_d.o 
+rm -f _csrc0.so
+if [ -x ../simv ]; then chmod -x ../simv; fi
+g++-4.8  -o ../simv   -Wl,-rpath-link=./ -Wl,-rpath='$ORIGIN'/simv.daidir/ -Wl,-rpath=./simv.daidir/ \
+-Wl,-rpath='$ORIGIN'/simv.daidir//scsim.db.dir  -Wl,--no-as-needed -rdynamic   amcQwB.o \
+_21007_archive_1.so _csrc0.so  SIM_l.o  _csrc0.so     rmapats_mop.o rmapats.o rmar.o \
+rmar_llvm_0_1.o rmar_llvm_0_0.o          /home/fzhang/synopsys/vcs_2016.06/linux64/lib/libzerosoft_rt_stubs.so \
+/home/fzhang/synopsys/vcs_2016.06/linux64/lib/libvirsim.so /home/fzhang/synopsys/vcs_2016.06/linux64/lib/liberrorinf.so \
+/home/fzhang/synopsys/vcs_2016.06/linux64/lib/libsnpsmalloc.so    /home/fzhang/synopsys/vcs_2016.06/linux64/lib/libvcsnew.so \
+/home/fzhang/synopsys/vcs_2016.06/linux64/lib/libsimprofile.so /home/fzhang/synopsys/vcs_2016.06/linux64/lib/libreader_common.so \
+/home/fzhang/synopsys/vcs_2016.06/linux64/lib/libBA.a /home/fzhang/synopsys/vcs_2016.06/linux64/lib/libuclinative.so \
+-Wl,-whole-archive /home/fzhang/synopsys/vcs_2016.06/linux64/lib/libvcsucli.so -Wl,-no-whole-archive \
+_vcs_pli_stub_.o   /home/fzhang/synopsys/vcs_2016.06/linux64/lib/vcs_save_restore_new.o \
+/home/fzhang/synopsys/verdi_2016.06-1/share/PLI/VCS/LINUX64/pli.a -ldl  -lc -lm -lpthread \
+-ldl 
+../simv up to date
+make[1]: Leaving directory '/home/fzhang/Verilog/rtc/sim/csrc'
+Command: ./simv +v2k -a vcs.log -cm_runsilent -cm line+tgl+cond+fsm -cm_runsilent -cm_dir ./vcs_coverage -cm_runsilent -cm_name case1
+Chronologic VCS simulator copyright 1991-2016
+Contains Synopsys proprietary information.
+Compiler version L-2016.06_Full64; Runtime version L-2016.06_Full64;  Dec  9 15:10 2023
+*Verdi3* Loading libsscore_vcs201606.so
+*Verdi3* : FSDB_GATE is set.
+*Verdi3* : FSDB_RTL is set.
+*Verdi3* : Enable Parallel Dumping.
+FSDB Dumper for VCS, Release Verdi3_L-2016.06-1, Linux x86_64/64bit, 07/10/2016
+(C) 1996 - 2016 by Synopsys, Inc.
+*Verdi3* FSDB WARNING: The FSDB file already exists. Overwriting the FSDB file may crash the programs that are using this file.
+*Verdi3* : Create FSDB file 'iic_control.fsdb'
+*Verdi3* : Begin traversing the scope (iic_control_tb), layer (0).
+*Verdi3* : End of traversing.
+$finish called from file "iic_control_tb.v", line 70.
+$finish at simulation time            641300000
+
+---------------------------------------------------------------------------
+VCS Coverage Metrics: during simulation line, cond, FSM, tgl was monitored
+---------------------------------------------------------------------------
+           V C S   S i m u l a t i o n   R e p o r t 
+Time: 641300000 ps
+CPU Time:      0.180 seconds;       Data structure size:   0.0Mb
+Sat Dec  9 15:10:15 2023
+CPU time: .146 seconds to compile + .144 seconds to elab + .183 seconds to link + .289 seconds in simulation

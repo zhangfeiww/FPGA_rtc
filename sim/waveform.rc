@@ -1,0 +1,87 @@
+Magic 271485
+Revision Verdi3_L-2016.06-1
+
+; Window Layout <x> <y> <width> <height> <signalwidth> <valuewidth>
+viewPort 0 28 1848 750 195 162
+
+; File list:
+; openDirFile [-d delimiter] [-s time_offset] [-rf auto_bus_rule_file] path_name file_name
+openDirFile -d / "" "/home/fzhang/Verilog/rtc/sim/iic_control.fsdb"
+
+; file time scale:
+; fileTimeScale ### s|ms|us|ns|ps
+
+; signal spacing:
+signalSpacing 5
+
+; windowTimeUnit is used for zoom, cursor & marker
+; waveform viewport range
+zoom 9284623.208191 313466564.505119
+cursor 117280000.000000
+marker 153280000.000000
+
+; user define markers
+; userMarker time_pos marker_name color linestyle
+; visible top row signal index
+top 0
+; marker line index
+markerPos 2
+
+; event list
+; addEvent event_name event_expression
+; curEvent event_name
+
+
+
+COMPLEX_EVENT_BEGIN
+
+
+COMPLEX_EVENT_END
+
+
+
+; toolbar current search type
+; curSTATUS search_type
+curSTATUS ByChange
+
+
+aliasmapname iic_control.current_state
+nalias IDLE		4'b0000		NULL
+nalias SEND_BIT_ADDR_H		4'b0100		NULL
+nalias START_1		4'b0001		NULL
+nalias START_2		4'b1010		NULL
+nalias SLAVE_ACK_2		4'b0101		NULL
+nalias MASTER_NACK		4'b1110		NULL
+nalias SEND_DR_ADDR		4'b1011		NULL
+nalias STOP		4'b1111		NULL
+nalias WR_DATA		4'b1000		NULL
+nalias SEND_DW_ADDR		4'b0010		NULL
+nalias SLAVE_ACK_5		4'b1100		NULL
+nalias SLAVE_ACK_4		4'b1001		NULL
+nalias SEND_BIT_ADDR_L		4'b0110		NULL
+nalias SLAVE_ACK_1		4'b0011		NULL
+nalias RD_DATA		4'b1101		NULL
+nalias SLAVE_ACK_3		4'b0111		NULL
+
+addGroup "iic"
+activeDirFile "" "/home/fzhang/Verilog/rtc/sim/iic_control.fsdb"
+addSignal -h 15 /iic_control_tb/u0_iic_control/iic_scl
+addSignal -h 15 -holdScope iic_sda
+addGroup "cnt"
+addSignal -h 15 -UNSIGNED -HEX /iic_control_tb/u0_iic_control/cnt_bit[2:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope cnt_iic_clk[1:0]
+aliasname iic_control.current_state
+addSignal -h 15 -UNSIGNED -HEX -holdScope current_state[3:0]
+addGroup "G3"
+addSignal -h 15 /iic_control_tb/u0_iic_control/wr_data_buff
+addSignal -h 15 -holdScope sda_en
+addGroup "data"
+addSignal -h 15 -UNSIGNED -BIN /iic_control_tb/rd_data[7:0]
+addSignal -h 15 /iic_control_tb/u0_iic_control/ack
+addSignal -h 15 -UNSIGNED -BIN /iic_control_tb/wr_data[7:0]
+addSignal -h 15 -UNSIGNED -BIN /iic_control_tb/u0_iic_control/byte_addr[15:0]
+addGroup "G5"
+
+; getSignalForm Scope Hierarchy Status
+; active file of getSignalForm
+

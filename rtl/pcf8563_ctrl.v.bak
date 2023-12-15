@@ -1,0 +1,376 @@
+module pdcf8563_ctrl
+#(
+	TIME_INIT	=	48'h23_12_11_21_16_00//YEAR_MON_DAY_HOUR_MIN_SCE
+)
+(
+	input		wire				sys_clk		,					
+	input		wire				iic_clk		,
+	input		wire				sys_rstn	,
+	input		wire				iic_end		,
+	input		wire		[7:0]	rd_data		,
+	input		wire				key_flag	,
+
+	output		reg					wr_en		,
+	output		reg					rd_en		,
+	output		reg					iic_start	,
+	output		reg			[15:0]	byte_addr	,
+	output		reg			[7:0]	wr_data		,
+	output		reg			[23:0]	data_out	
+);
+localparam 	S_WAIT = 4'd1 , 
+			INIT_SEC = 4'd2 , 
+			INIT_MIN = 4'd3 , 
+			INIT_HOUR = 4'd4 ,
+			INIT_DAY = 4'd5 , 
+			INIT_MON = 4'd6 , 
+			INIT_YEAR = 4'd7 , 
+			RD_SEC = 4'd8 , 
+			RD_MIN = 4'd9 , 
+			RD_HOUR = 4'd10 , 
+			RD_DAY = 4'd11 , 
+			RD_MON = 4'd12 , 
+			RD_YEAR = 4'd13 ; 
+localparam CNT_WAIT_8MS = 8000 ; //8ms,because iic_clk is 1MHz;
+
+
+				reg 		[7:0] 	year 				; 
+				reg 		[7:0] 	month 				; 
+				reg 		[7:0] 	day 				; 
+				reg 		[7:0] 	hour 				; 
+				reg 		[7:0] 	minute 				; 
+				reg 		[7:0] 	second 				; 
+				reg 			  	data_flag 			; 
+				reg 		[12:0]	cnt_wait 			;
+
+				reg 		[3:0] 	current_state		;
+				reg 		[3:0] 	next_state			;
+always@(posedge sys_clk or negedge sys_rstn)begin
+	if(!sys_rstn )
+		data_flag <= 1'b0;
+	else if(key_flag == 1'b1)
+		data_flag <= ~data_flag;
+	else
+		data_flag <= data_flag;
+end
+always@(posedge sys_clk or negedge sys_rstn)begin
+	if(!sys_rstn)
+		data_out <= 24'd0;
+	else if(data_flag == 1'b0)
+		data_out <= {hour,minute,second};
+	else
+		data_out <= {year,month,day};
+end
+
+
+
+always@(posedge iic_clk or negedge sys_rstn)begin
+	if(!sys_rstn)
+		cnt_wait <= 13'd0;
+	else if((current_state==S_WAIT 		&& cnt_wait==CNT_WAIT_8MS) 	||
+			(current_state==INIT_SEC 	&& iic_end==1'b1) 			|| 
+			(current_state==INIT_MIN	&& iic_end==1'b1)  			|| 
+			(current_state==INIT_HOUR 	&& iic_end==1'b1)			|| 
+			(current_state==INIT_DAY 	&& iic_end==1'b1) 			|| 
+			(current_state==INIT_MON	&& iic_end == 1'b1)			|| 
+			(current_state==INIT_YEAR 	&& iic_end==1'b1)			|| 
+			(current_state==RD_SEC 		&& iic_end==1'b1) 			|| 
+			(current_state==RD_MIN 		&&iic_end==1'b1) 			|| 
+			(current_state==RD_HOUR 	&& iic_end==1'b1) 			||
+			(current_state==RD_DAY 		&& iic_end==1'b1) 			|| 
+			(current_state==RD_MON 		&&iic_end==1'b1) 			|| 
+			(current_state==RD_YEAR 	&& iic_end==1'b1))
+		cnt_wait <= 13'd0;
+	else
+		cnt_wait <= cnt_wait + 1'b1;
+end
+
+
+always @(posedge iic_clk or negedge sys_rstn) begin
+        if (!sys_rstn)
+            current_state <= S_WAIT;
+        else
+            current_state <= next_state;
+end
+
+always @(*) begin
+        case (current_state)
+			S_WAIT			:		begin
+										if(cnt_wait == CNT_WAIT_8MS)
+											next_state	=	INIT_SEC;
+										else
+											next_state	=	S_WAIT;	
+									end
+			INIT_SEC		:		begin
+										if(iic_end	==	1'b1)
+											next_state	=	INIT_MIN;
+										else
+											next_state	=	INIT_SEC;
+									end
+			INIT_MIN		:		begin
+										if(iic_end	==	1'b1)
+											next_state	=	INIT_HOUR;
+										else
+											next_state	=	INIT_MIN;
+									end
+			INIT_HOUR		:		begin	
+										if(iic_end	==	1'b1)
+											next_state	=	INIT_DAY;
+										else
+											next_state	=	INIT_HOUR;
+									end
+			INIT_DAY		:		begin	
+										if(iic_end	==	1'b1)
+											next_state	=	INIT_MON;
+										else
+											next_state	=	INIT_DAY;
+									end
+			INIT_MON		:		begin	
+										if(iic_end	==	1'b1)
+											next_state	=	INIT_YEAR;
+										else
+											next_state	=	INIT_MON;
+									end
+			INIT_YEAR		:		begin
+										if(iic_end	==	1'b1)
+											next_state	=	RD_SEC;
+										else
+											next_state	=	INIT_YEAR;
+									end
+			RD_SEC			:		begin
+										if(iic_end	==	1'b1)
+											next_state	=	RD_MIN;
+										else
+											next_state	=	RD_SEC;
+									end
+			RD_MIN			:		begin
+										if(iic_end	==	1'b1)
+											next_state	=	RD_HOUR;
+										else
+											next_state	=	RD_MIN;
+									end
+			RD_HOUR			:		begin
+										if(iic_end	==	1'b1)
+											next_state	=	RD_DAY;
+										else
+											next_state	=	RD_HOUR;
+									end
+			RD_DAY			:		begin
+										if(iic_end	==	1'b1)
+											next_state	=	RD_MON;
+										else
+											next_state	=	RD_DAY;
+									end
+			RD_MON			:		begin
+										if(iic_end	==	1'b1)
+											next_state	=	RD_YEAR;
+										else
+											next_state	=	RD_MON;
+									end
+			RD_YEAR			:		begin
+										if(iic_end	==	1'b1)
+											next_state	=	RD_SEC;
+										else
+											next_state	=	RD_YEAR;
+									end
+			default			:			next_state	=	S_WAIT;
+		endcase
+end
+always@(posedge iic_clk or negedge sys_rstn)begin
+	 if(!sys_rstn)
+	 	begin
+	 		wr_en <= 1'b0 ;
+	 		rd_en <= 1'b0 ;
+	 		iic_start <= 1'b0 ;
+	 		byte_addr <= 16'd0 ;
+	 		wr_data <= 8'd0 ;
+	 		year <= 8'd0 ;
+	 		month <= 8'd0 ;
+	 		day <= 8'd0 ;
+	 		hour <= 8'd0 ;
+	 		minute <= 8'd0 ;
+	 		second <= 8'd0 ;
+	 	end
+	 else 	case(current_state)
+	 			S_WAIT		:		begin
+										wr_en <= 1'b0 ;
+ 										rd_en <= 1'b0 ;
+ 										iic_start <= 1'b0 ;
+										byte_addr <= 16'h0 ;
+ 										wr_data <= 8'h00 ;
+									end
+				INIT_SEC	:		begin
+										if(cnt_wait == 13'd1)
+											 begin
+											 	wr_en <= 1'b1 ;
+											 	iic_start <= 1'b1 ;
+											 	byte_addr <= 16'h02 ;
+											 	wr_data <= TIME_INIT[7:0];
+											 end
+										else
+											 begin
+											 	wr_en <= 1'b1 ;
+											 	iic_start <= 1'b0 ;
+											 	byte_addr <= 16'h02 ;
+											 	wr_data <= TIME_INIT[7:0];
+											 end
+									end
+				INIT_MIN	:		begin
+										if(cnt_wait == 13'd1)
+											 begin
+											 	iic_start <= 1'b1 ;
+											 	byte_addr <= 16'h03 ;
+											 	wr_data <= TIME_INIT[15:8];
+											 end
+										else
+											 begin
+											 	iic_start <= 1'b0 ;
+											 	byte_addr <= 16'h03 ;
+											 	wr_data <= TIME_INIT[15:8];
+											 end
+									end
+				INIT_HOUR	:		begin
+										if(cnt_wait == 13'd1)
+											 begin
+											 	iic_start <= 1'b1 ;
+											 	byte_addr <= 16'h04 ;
+											 	wr_data <= TIME_INIT[23:16];
+											 end
+										else
+											 begin
+											 	iic_start <= 1'b0 ;
+											 	byte_addr <= 16'h04 ;
+											 	wr_data <= TIME_INIT[23:16];
+											 end
+									end
+				INIT_DAY	:		begin
+										if(cnt_wait == 13'd1)
+											 begin
+											 	iic_start <= 1'b1 ;
+											 	byte_addr <= 16'h05 ;
+											 	wr_data <= TIME_INIT[31:24];
+											 end
+										else
+											 begin
+											 	iic_start <= 1'b0 ;
+											 	byte_addr <= 16'h05 ;
+											 	wr_data <= TIME_INIT[31:24];
+											 end
+									end
+				INIT_MON	:		begin
+										if(cnt_wait == 13'd1)
+											 begin
+											 	iic_start <= 1'b1 ;
+											 	byte_addr <= 16'h07 ;
+											 	wr_data <= TIME_INIT[39:32];
+											 end
+										else
+											 begin
+											 	iic_start <= 1'b0 ;
+											 	byte_addr <= 16'h07 ;
+											 	wr_data <= TIME_INIT[39:32];
+											 end
+									end
+				INIT_YEAR	:		begin
+										if(cnt_wait == 13'd1)
+											 begin
+											 	iic_start <= 1'b1 ;
+											 	byte_addr <= 16'h08 ;
+											 	wr_data <= TIME_INIT[47:40];
+											 end
+										else
+											 begin
+											 	iic_start <= 1'b0 ;
+											 	byte_addr <= 16'h08 ;
+											 	wr_data <= TIME_INIT[47:40];
+											 end
+									end
+				RD_SEC	:			begin
+										if(cnt_wait == 13'd1)
+											iic_start <= 1'b1 ;
+										else if(iic_end	==	1'b1)
+											second <= rd_data[6:0];
+										else
+											 begin
+											 	wr_en <= 1'b0 ;
+ 												rd_en <= 1'b1 ;
+ 												iic_start <= 1'b0 ;
+ 												byte_addr <= 16'h02 ;
+ 												wr_data <= 8'd0 ;
+											 end
+									end
+				RD_MIN	:			begin
+										if(cnt_wait == 13'd1)
+											iic_start <= 1'b1 ;
+										else if(iic_end	==	1'b1)
+											minute <= rd_data[6:0];
+										else
+											 begin
+ 												rd_en <= 1'b1 ;
+ 												iic_start <= 1'b0 ;
+ 												byte_addr <= 16'h03 ;
+											 end
+									end
+				RD_HOUR	:			begin
+										if(cnt_wait == 13'd1)
+											iic_start <= 1'b1 ;
+										else if(iic_end	==	1'b1)
+											hour <= rd_data[5:0];
+										else
+											 begin
+ 												rd_en <= 1'b1 ;
+ 												iic_start <= 1'b0 ;
+ 												byte_addr <= 16'h04 ;
+											 end
+									end
+				RD_DAY	:			begin
+										if(cnt_wait == 13'd1)
+											iic_start <= 1'b1 ;
+										else if(iic_end	==	1'b1)
+											day <= rd_data[5:0];
+										else
+											 begin
+ 												rd_en <= 1'b1 ;
+ 												iic_start <= 1'b0 ;
+ 												byte_addr <= 16'h05 ;
+											 end
+									end
+				RD_MON	:			begin
+										if(cnt_wait == 13'd1)
+											iic_start <= 1'b1 ;
+										else if(iic_end	==	1'b1)
+											month <= rd_data[4:0];
+										else
+											 begin
+ 												rd_en <= 1'b1 ;
+ 												iic_start <= 1'b0 ;
+ 												byte_addr <= 16'h07 ;
+											 end
+									end
+				RD_YEAR	:			begin
+										if(cnt_wait == 13'd1)
+											iic_start <= 1'b1 ;
+										else if(iic_end	==	1'b1)
+											year <= rd_data[7:0];
+										else
+											 begin
+ 												rd_en <= 1'b1 ;
+ 												iic_start <= 1'b0 ;
+ 												byte_addr <= 16'h08 ;
+											 end
+									end
+				default	:			begin
+										wr_en <= 1'b0 ;
+ 										rd_en <= 1'b0 ;
+ 										iic_start <= 1'b0 ;
+ 										byte_addr <= 16'd0 ;
+ 										wr_data <= 8'd0 ;
+ 										year <= 8'd0 ;
+ 										month <= 8'd0 ;
+ 										day <= 8'd0 ;
+ 										hour <= 8'd0 ;
+ 										minute <= 8'd0 ;
+ 										second <= 8'd0 ;
+									end
+	 		endcase
+ end
+endmodule
