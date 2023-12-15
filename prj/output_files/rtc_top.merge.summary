@@ -1,0 +1,14 @@
+Partition Merge Status : Successful - Wed Dec 13 21:01:15 2023
+Quartus II 64-Bit Version : 13.1.0 Build 162 10/23/2013 SJ Full Version
+Revision Name : rtc_top
+Top-level Entity Name : rtc_top
+Family : Cyclone IV E
+Total logic elements : 1,363 / 10,320 ( 13 % )
+    Total combinational functions : 986 / 10,320 ( 10 % )
+    Dedicated logic registers : 783 / 10,320 ( 8 % )
+Total registers : 783
+Total pins : 21 / 180 ( 12 % )
+Total virtual pins : 0
+Total memory bits : 2,688 / 423,936 ( < 1 % )
+Embedded Multiplier 9-bit elements : 0 / 46 ( 0 % )
+Total PLLs : 0 / 2 ( 0 % )

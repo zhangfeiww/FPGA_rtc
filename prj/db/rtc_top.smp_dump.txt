@@ -1,0 +1,35 @@
+
+State Machine - |rtc_top|iic_control:u0_iic_control|current_state
+Name current_state.STOP current_state.MASTER_NACK current_state.RD_DATA current_state.SLAVE_ACK_5 current_state.SEND_DR_ADDR current_state.START_2 current_state.SLAVE_ACK_4 current_state.WR_DATA current_state.SLAVE_ACK_3 current_state.SEND_BIT_ADDR_L current_state.SLAVE_ACK_2 current_state.SEND_BIT_ADDR_H current_state.SLAVE_ACK_1 current_state.SEND_DW_ADDR current_state.START_1 current_state.IDLE 
+current_state.IDLE 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+current_state.START_1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 
+current_state.SEND_DW_ADDR 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 
+current_state.SLAVE_ACK_1 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 1 
+current_state.SEND_BIT_ADDR_H 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 1 
+current_state.SLAVE_ACK_2 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 1 
+current_state.SEND_BIT_ADDR_L 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 
+current_state.SLAVE_ACK_3 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 1 
+current_state.WR_DATA 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 1 
+current_state.SLAVE_ACK_4 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 
+current_state.START_2 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 1 
+current_state.SEND_DR_ADDR 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 1 
+current_state.SLAVE_ACK_5 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 
+current_state.RD_DATA 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 1 
+current_state.MASTER_NACK 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 1 
+current_state.STOP 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 
+
+State Machine - |rtc_top|pdcf8563_ctrl:u0_pdcf8563_ctrl|current_state
+Name current_state.RD_YEAR current_state.RD_MON current_state.RD_DAY current_state.RD_HOUR current_state.RD_MIN current_state.RD_SEC current_state.INIT_YEAR current_state.INIT_MON current_state.INIT_DAY current_state.INIT_HOUR current_state.INIT_MIN current_state.INIT_SEC current_state.S_WAIT 
+current_state.S_WAIT 0 0 0 0 0 0 0 0 0 0 0 0 0 
+current_state.INIT_SEC 0 0 0 0 0 0 0 0 0 0 0 1 1 
+current_state.INIT_MIN 0 0 0 0 0 0 0 0 0 0 1 0 1 
+current_state.INIT_HOUR 0 0 0 0 0 0 0 0 0 1 0 0 1 
+current_state.INIT_DAY 0 0 0 0 0 0 0 0 1 0 0 0 1 
+current_state.INIT_MON 0 0 0 0 0 0 0 1 0 0 0 0 1 
+current_state.INIT_YEAR 0 0 0 0 0 0 1 0 0 0 0 0 1 
+current_state.RD_SEC 0 0 0 0 0 1 0 0 0 0 0 0 1 
+current_state.RD_MIN 0 0 0 0 1 0 0 0 0 0 0 0 1 
+current_state.RD_HOUR 0 0 0 1 0 0 0 0 0 0 0 0 1 
+current_state.RD_DAY 0 0 1 0 0 0 0 0 0 0 0 0 1 
+current_state.RD_MON 0 1 0 0 0 0 0 0 0 0 0 0 1 
+current_state.RD_YEAR 1 0 0 0 0 0 0 0 0 0 0 0 1 
